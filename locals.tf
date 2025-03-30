@@ -1,15 +1,11 @@
 locals {
-
-  event_hub_role_assignments = { for ra in flatten([
-    for sk, sv in var.event_hubs : [
-      for rk, rv in sv.role_assignments : {
-        event_hub_key   = sk
-        ra_key          = rk
-        role_assignment = rv
-      }
-    ]
-  ]) : "${ra.event_hub_key}-${ra.ra_key}" => ra }
-
+  event_hubs_outputs = {
+    for hub_key, hub_module in module.event_hubs :
+    hub_key => {
+      name          = hub_module.name
+      partition_ids = hub_module.partition_ids
+    }
+  }
   # Private endpoint application security group associations
   # Remove if this resource does not support private endpoints
   private_endpoint_application_security_group_associations = { for assoc in flatten([
@@ -21,7 +17,5 @@ locals {
       }
     ]
   ]) : "${assoc.pe_key}-${assoc.asg_key}" => assoc }
-
-  resource_group_location            = try(data.azurerm_resource_group.parent[0].location, null)
   role_definition_resource_substring = "/providers/Microsoft.Authorization/roleDefinitions"
 }

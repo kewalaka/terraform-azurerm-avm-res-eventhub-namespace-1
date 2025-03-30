@@ -39,6 +39,11 @@ variable "maximum_throughput_units" {
     condition     = var.maximum_throughput_units == null ? true : var.maximum_throughput_units < 1 || var.maximum_throughput_units > 20
     error_message = "Maximum throughput units must be in the range of 1 to 20"
   }
+
+  validation {
+    condition     = var.auto_inflate_enabled ? var.maximum_throughput_units >= 1 && var.maximum_throughput_units <= 20 : var.maximum_throughput_units == null
+    error_message = "Maximum throughput units must be in the range of 1 to 20 and can only be set when Auto Inflate is enabled."
+  }
 }
 
 variable "zone_redundant" {

@@ -9,14 +9,14 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = ">= 3.7.0, < 4.0.0"
+      version = ">= 4.0.0, < 5.0.0"
     }
   }
 }
 
 provider "azurerm" {
   features {}
-  skip_provider_registration = true
+  resource_provider_registrations = "none"
 }
 
 # This ensures we have unique CAF compliant names for our resources.
@@ -27,39 +27,39 @@ module "naming" {
 
 # This is required for resource modules
 resource "azurerm_resource_group" "this" {
-  name     = module.naming.resource_group.name_unique
   location = "australiaeast"
+  name     = module.naming.resource_group.name_unique
 }
 
 resource "azurerm_eventhub_namespace" "this" {
-  name                = module.naming.eventhub.name_unique
   location            = azurerm_resource_group.this.location
+  name                = module.naming.eventhub.name_unique
   resource_group_name = azurerm_resource_group.this.name
   sku                 = "Standard"
 }
 
 locals {
   event_hubs = {
-    event_hub_existing_namespace = {
-      namespace_name      = module.event_hub.resource.id
-      partition_count     = 2
-      message_retention   = 3
-      resource_group_name = module.event_hub.resource.name
+    my_hub1 = {
+      namespace         = { resource_id = azurerm_eventhub_namespace.this.id }
+      partition_count   = 2
+      message_retention = 3
     }
     # Add more event hubs if needed
   }
 }
 
 module "event_hub" {
-  source = "../../"
+  for_each = local.event_hubs
+  source   = "../../modules/event_hub"
   # source             = "Azure/avm-<res/ptn>-<name>/azurerm"
   # ...
-  enable_telemetry         = false
-  existing_parent_resource = { name = azurerm_eventhub_namespace.this.name }
-  name                     = module.naming.eventhub_namespace.name_unique
-  resource_group_name      = azurerm_resource_group.this.name
+  enable_telemetry = false
 
-  event_hubs = local.event_hubs
+  name              = module.naming.eventhub_namespace.name_unique
+  namespace         = each.value.namespace
+  partition_count   = each.value.partition_count
+  message_retention = each.value.message_retention
 }
 ```
 
@@ -70,13 +70,13 @@ The following requirements are needed by this module:
 
 - <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (>= 1.3.0)
 
-- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (>= 3.7.0, < 4.0.0)
+- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (>= 4.0.0, < 5.0.0)
 
 ## Providers
 
 The following providers are used by this module:
 
-- <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) (>= 3.7.0, < 4.0.0)
+- <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) (>= 4.0.0, < 5.0.0)
 
 ## Resources
 
@@ -104,7 +104,7 @@ The following Modules are called:
 
 ### <a name="module_event_hub"></a> [event\_hub](#module\_event\_hub)
 
-Source: ../../
+Source: ../../modules/event_hub
 
 Version:
 

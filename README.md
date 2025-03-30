@@ -11,9 +11,9 @@ This is a Terraform AVM module for Event Hub resources in Azure.
 
 The following requirements are needed by this module:
 
-- <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (>= 1.3.0)
+- <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (>= 1.9.0)
 
-- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (>= 3.71.0, < 4.0.0)
+- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (>= 4.0.0, < 5.0.0)
 
 - <a name="requirement_random"></a> [random](#requirement\_random) (>= 3.5.0, < 4.0.0)
 
@@ -21,7 +21,7 @@ The following requirements are needed by this module:
 
 The following providers are used by this module:
 
-- <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) (>= 3.71.0, < 4.0.0)
+- <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) (>= 4.0.0, < 5.0.0)
 
 - <a name="provider_random"></a> [random](#provider\_random) (>= 3.5.0, < 4.0.0)
 
@@ -29,22 +29,24 @@ The following providers are used by this module:
 
 The following resources are used by this module:
 
-- [azurerm_eventhub.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/eventhub) (resource)
 - [azurerm_eventhub_namespace.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/eventhub_namespace) (resource)
 - [azurerm_management_lock.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/management_lock) (resource)
 - [azurerm_private_endpoint.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/private_endpoint) (resource)
 - [azurerm_private_endpoint_application_security_group_association.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/private_endpoint_application_security_group_association) (resource)
 - [azurerm_resource_group_template_deployment.telemetry](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group_template_deployment) (resource)
-- [azurerm_role_assignment.event_hubs](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) (resource)
 - [azurerm_role_assignment.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) (resource)
 - [random_id.telem](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/id) (resource)
-- [azurerm_eventhub_namespace.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/eventhub_namespace) (data source)
-- [azurerm_resource_group.parent](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/resource_group) (data source)
 
 <!-- markdownlint-disable MD013 -->
 ## Required Inputs
 
 The following input variables are required:
+
+### <a name="input_location"></a> [location](#input\_location)
+
+Description: Azure region where the resource should be deployed.  If null, the location will be inferred from the resource group location.
+
+Type: `string`
 
 ### <a name="input_name"></a> [name](#input\_name)
 
@@ -211,20 +213,6 @@ map(object({
 
 Default: `{}`
 
-### <a name="input_existing_parent_resource"></a> [existing\_parent\_resource](#input\_existing\_parent\_resource)
-
-Description: If supplied, this event hub namespace resource will be used by child resources (e.g. event hubs), instead of creating a new event hub namespace.
-
-Type:
-
-```hcl
-object({
-    name = string
-  })
-```
-
-Default: `null`
-
 ### <a name="input_local_authentication_enabled"></a> [local\_authentication\_enabled](#input\_local\_authentication\_enabled)
 
 Description: Is SAS authentication enabled for the EventHub Namespace?.  Defaults to `false`.
@@ -232,14 +220,6 @@ Description: Is SAS authentication enabled for the EventHub Namespace?.  Default
 Type: `bool`
 
 Default: `false`
-
-### <a name="input_location"></a> [location](#input\_location)
-
-Description: Azure region where the resource should be deployed.  If null, the location will be inferred from the resource group location.
-
-Type: `string`
-
-Default: `null`
 
 ### <a name="input_lock"></a> [lock](#input\_lock)
 
@@ -435,21 +415,55 @@ Default: `true`
 
 The following outputs are exported:
 
-### <a name="output_private_endpoints"></a> [private\_endpoints](#output\_private\_endpoints)
+### <a name="output_default_primary_connection_string"></a> [default\_primary\_connection\_string](#output\_default\_primary\_connection\_string)
 
-Description: A map of private endpoints. The map key is the supplied input to var.private\_endpoints. The map value is the entire azurerm\_private\_endpoint resource.
+Description: The primary connection string for the RootManageSharedAccessKey authorization rule.
 
-### <a name="output_resource"></a> [resource](#output\_resource)
+### <a name="output_default_primary_connection_string_alias"></a> [default\_primary\_connection\_string\_alias](#output\_default\_primary\_connection\_string\_alias)
 
-Description: This is the full output for the resource.
+Description: The alias of the primary connection string for the RootManageSharedAccessKey authorization rule.
 
-### <a name="output_resource_eventhubs"></a> [resource\_eventhubs](#output\_resource\_eventhubs)
+### <a name="output_default_primary_key"></a> [default\_primary\_key](#output\_default\_primary\_key)
 
-Description: A map of event hubs.  The map key is the supplied input to var.event\_hubs. The map value is the entire azurerm\_event\_hubs resource.
+Description: The primary access key for the RootManageSharedAccessKey authorization rule.
+
+### <a name="output_default_secondary_connection_string"></a> [default\_secondary\_connection\_string](#output\_default\_secondary\_connection\_string)
+
+Description: The secondary connection string for the RootManageSharedAccessKey authorization rule.
+
+### <a name="output_default_secondary_connection_string_alias"></a> [default\_secondary\_connection\_string\_alias](#output\_default\_secondary\_connection\_string\_alias)
+
+Description: The alias of the secondary connection string for the RootManageSharedAccessKey authorization rule.
+
+### <a name="output_default_secondary_key"></a> [default\_secondary\_key](#output\_default\_secondary\_key)
+
+Description: The secondary access key for the RootManageSharedAccessKey authorization rule.
+
+### <a name="output_event_hubs"></a> [event\_hubs](#output\_event\_hubs)
+
+Description: A map of Event Hubs with their names and partition IDs.
+
+### <a name="output_identity"></a> [identity](#output\_identity)
+
+Description: The identity block of the EventHub Namespace.
+
+### <a name="output_name"></a> [name](#output\_name)
+
+Description: The name of the EventHub Namespace.
+
+### <a name="output_resource_id"></a> [resource\_id](#output\_resource\_id)
+
+Description: The ID of the EventHub Namespace.
 
 ## Modules
 
-No modules.
+The following Modules are called:
+
+### <a name="module_event_hubs"></a> [event\_hubs](#module\_event\_hubs)
+
+Source: ./modules/event_hub
+
+Version:
 
 <!-- markdownlint-disable-next-line MD041 -->
 ## Data Collection
