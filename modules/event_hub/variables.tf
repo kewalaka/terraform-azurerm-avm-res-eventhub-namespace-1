@@ -133,7 +133,7 @@ DESCRIPTION
 
 variable "status" {
   type        = string
-  default     = null
+  default     = "Active"
   description = "The status of the Event Hub. Possible values are 'Active' or 'Disabled'. Defaults to null."
 
   validation {

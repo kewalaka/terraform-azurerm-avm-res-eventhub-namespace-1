@@ -52,6 +52,7 @@ module "event_hub" {
   enable_telemetry    = var.enable_telemetry
   name                = module.naming.eventhub_namespace.name_unique
   resource_group_name = azurerm_resource_group.this.name
+  location            = azurerm_resource_group.this.location
 
   event_hubs = local.event_hubs
 }

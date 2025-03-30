@@ -64,6 +64,33 @@ Type: `string`
 
 The following input variables are optional (have default values):
 
+### <a name="input_auth_rules"></a> [auth\_rules](#input\_auth\_rules)
+
+Description: A map of authorization rules to create. Each key is a unique identifier, and the value is an object containing the following parameters:
+- name: (string) The name of the authorization rule.
+- namespace\_name: (string) The name of the Event Hub namespace.
+- eventhub\_name: (optional, string) The name of the Event Hub, if not specified a namespace scoped rule will be created.
+- resource\_group\_name: (string) The name of the resource group containing the Event Hub namespace.
+- listen: (optional, bool) Specifies if the rule has permissions to Listen to the Event Hub. Defaults to false.
+- send: (optional, bool) Specifies if the rule has permissions to Send to the Event Hub. Defaults to false.
+- manage: (optional, bool) Specifies if the rule has permissions to Manage the Event Hub. Defaults to false. When true, both listen and send must also be true.
+
+Type:
+
+```hcl
+map(object({
+    name                = string
+    namespace_name      = string
+    eventhub_name       = optional(string)
+    resource_group_name = string
+    listen              = optional(bool, false)
+    send                = optional(bool, false)
+    manage              = optional(bool, false)
+  }))
+```
+
+Default: `{}`
+
 ### <a name="input_auto_inflate_enabled"></a> [auto\_inflate\_enabled](#input\_auto\_inflate\_enabled)
 
 Description: Is Auto Inflate enabled for the EventHub Namespace?
@@ -81,6 +108,29 @@ Defaults to 1.
 Type: `number`
 
 Default: `1`
+
+### <a name="input_consumer_groups"></a> [consumer\_groups](#input\_consumer\_groups)
+
+Description: A map of consumer groups to create. Each key is a unique identifier, and the value is an object containing the following parameters:
+- name: (string) The name of the consumer group.
+- eventhub\_name: (string) The name of the Event Hub to associate the consumer group with.
+- namespace\_name: (string) The name of the Event Hub namespace.
+- resource\_group\_name: (string) The name of the resource group containing the Event Hub namespace.
+- user\_metadata: (optional, string) Specifies the user metadata.
+
+Type:
+
+```hcl
+map(object({
+    name                = optional(string)
+    eventhub_name       = optional(string)
+    namespace_name      = optional(string)
+    resource_group_name = optional(string)
+    user_metadata       = optional(string)
+  }))
+```
+
+Default: `{}`
 
 ### <a name="input_customer_managed_key"></a> [customer\_managed\_key](#input\_customer\_managed\_key)
 
@@ -458,6 +508,18 @@ Description: The ID of the EventHub Namespace.
 ## Modules
 
 The following Modules are called:
+
+### <a name="module_auth_rules"></a> [auth\_rules](#module\_auth\_rules)
+
+Source: ./modules/auth_rule
+
+Version:
+
+### <a name="module_consumer_groups"></a> [consumer\_groups](#module\_consumer\_groups)
+
+Source: ./modules/consumer_group
+
+Version:
 
 ### <a name="module_event_hubs"></a> [event\_hubs](#module\_event\_hubs)
 
